@@ -12,3 +12,10 @@
 	* fixed layout to make <IfModule> work as expected.
 	* documentation updates.
 	* released mod_chroot/0.4
+
+2005-06-12	Hobbit
+	* fixed a problem with some CGIs (mod_cgid, mod_fcgid)
+	  being executed outside the chroot jail.
+	  Patch by <clement.hermann*free.fr>, thanks!
+	* updated documentation
+	* released mod_chroot/0.5

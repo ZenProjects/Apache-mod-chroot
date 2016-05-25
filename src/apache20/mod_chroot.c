@@ -8,7 +8,7 @@
 #include "apr.h"
 #include "apr_pools.h"
 
-#define MODULE_SIGNATURE "mod_chroot/0.4"
+#define MODULE_SIGNATURE "mod_chroot/0.5"
 module AP_MODULE_DECLARE_DATA chroot_module;
 
 typedef struct {
@@ -75,7 +75,14 @@ chroot_srv_config *cfg = (chroot_srv_config *)ap_get_module_config(s->module_con
 }
 
 static void register_hooks(apr_pool_t *p) {
-	ap_hook_post_config(chroot_init, NULL, NULL, APR_HOOK_REALLY_LAST);
+        /* we want to be loaded last, except for mod_fcgid... and other ? */
+        static const char * const chrootPost[] = { 
+		"mod_fcgid.c", 
+		"mod_cgid.c", 
+		NULL 
+	};
+
+        ap_hook_post_config(chroot_init, NULL, chrootPost, APR_HOOK_REALLY_LAST);	
 }
 
 static const command_rec chroot_cmds[] = {

@@ -10,7 +10,7 @@
 #include "http_conf_globals.h"
 #endif
 
-#define MODULE_SIGNATURE "mod_chroot/0.4"
+#define MODULE_SIGNATURE "mod_chroot/0.5"
 module MODULE_VAR_EXPORT chroot_module;
 
 typedef struct {

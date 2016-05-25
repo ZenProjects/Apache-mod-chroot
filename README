@@ -13,6 +13,9 @@ What is it?
      * PLD Linux
      * Gentoo Linux
      * Debian testing/unstable
+     * NetBSD
+
+   Many thanks to all package maintainers!
 
 Why chroot?
 
@@ -41,7 +44,7 @@ chroot - the hard way
      * additional modules needed by the program (for Apache: mod_php and
        other modules)
 
-   Creating this structure is a great fun. Run the program, read the error
+   Creating this structure is great fun. Run the program, read the error
    message, copy the missing file, start over. Now think about upgrading -
    you have to keep your "virtual root" current - if there is a bug in
    libssl, you need to put a new version in two places. Scared enough? Read
@@ -86,15 +89,12 @@ Contact
        subscribe. Users who are not subscribed are not allowed to post.
 
    mod_chroot mailing list is also available via GMane (as
-   gmane.comp.apache.mod-chroot.general). GMane also has a nice archive
-
-   .
+   gmane.comp.apache.mod-chroot.general). GMane also has a nice archive.
 
 Prior art
 
    I needed a simple module just to perform chroot at startup. Before I
    started coding, I found mod_security which does this, among others. I
    didn't need URL normalization and other mod_security features so I decided
-   to create my own module. My code is very similar to mod_security (and one
-   idea is shamelessly "borrowed"), with some sanity checks added.
-   mod_security is developed by Ivan Ristic.
+   to create my own module. My code is similar to mod_security, with some
+   sanity checks added. mod_security is developed by Ivan Ristic.

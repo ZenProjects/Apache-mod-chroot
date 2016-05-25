@@ -1,5 +1,15 @@
                                    mod_chroot
 
+Restarting Apache
+
+   Once chrooted, Apache cannot access anything located above ChrootDir. For
+   that reason restarting Apache with 'apachectl reload', 'apachectl
+   graceful' or 'kill -HUP apache_pid' will not work as expected. Apache will
+   not be able to read its config file, open logs or load modules (unless you
+   put them inside the jail, but mod_chroot is all about not doing that!).
+   Use 'apachectl stop' followed by 'apachectl start' to restart
+   mod_chroot-enabled Apache.
+
 DNS lookups
 
    libresolv uses /etc/resolv.conf to find your DNS server. If this file

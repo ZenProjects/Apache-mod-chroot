@@ -64,13 +64,9 @@ Caveats
    Running Apache (and CGI/Perl/PHP) inside a chroot jail can be tricky. Read
    CAVEATS for known problems and solutions.
 
-   mod_chroot has been tested under Linux 2.4 and FreeBSD 4-STABLE with
-   Apache 1.3.29. It should work under older versions of Apache 1.3 as well.
-
-   Starting from version 0.3, mod_chroot supports Apache 2. It has been
-   tested with Apache 2.0.51 under Linux 2.4 and FreeBSD 4-STABLE. It should
-   work under older versions of Apache 2.0 as well. Be sure to read Apache
-   2.0 notes before using mod_chroot with Apache 2.0
+   Starting 1.0 they support only Apache 2.0.
+   It has been tested with Apache 2.0.49/59 and 2.2.4 under Linux 2.6.  It should
+   work under older versions of Apache 2.0 as well. 
 
 Download
 
@@ -97,4 +93,5 @@ Prior art
    started coding, I found mod_security which does this, among others. I
    didn't need URL normalization and other mod_security features so I decided
    to create my own module. My code is similar to mod_security, with some
-   sanity checks added. mod_security is developed by Ivan Ristic.
+   sanity checks added in chroot are move in child_init hook to make no need 
+   to have pidfile,scoreboard,lockfile in chroot jail. mod_security is developed by Ivan Ristic.

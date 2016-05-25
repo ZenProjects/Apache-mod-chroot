@@ -18,7 +18,7 @@ If you configure your chroot jail properly, Apache and its child processes
 A non-root process is not able to leave a chroot jail. Still it's not wise
 to put device files, suid binaries or hardlinks inside the jail.
 
-## chroot - the hard way
+## Chroot - the hard way
 
 There are many documents about running programs inside a chroot jail. Some
 daemons (tinydns, dnscache, vsftpd) support it out of the box. For others
@@ -39,7 +39,7 @@ you have to keep your "virtual root" current - if there is a bug in
 libssl, you need to put a new version in two places. Scared enough? Read
 on.
 
-## chroot - the mod_chroot way
+## Chroot - the mod_chroot way
 
 mod_chroot allows you to run Apache in a chroot jail with no additional
 files. The chroot() system call is performed at the end of startup
@@ -91,6 +91,8 @@ Ex. this are not ok:
 	DocumentRoot /htdocs/www1
 	CoreDumpDirectory /dump/www1
 ```
+
+# Building 
 
 ## Requirement
 
@@ -225,3 +227,66 @@ all request to the server like http://mysserver/path/to/mypage while be transpar
 all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
    /path/to/mypage because the chroot are /srv/www1/htdocs.
 
+# CAVEATS
+
+## DNS lookups
+
+libresolv uses /etc/resolv.conf to find your DNS server. If this file
+doesn't exist, libresolv uses 127.0.0.1:53 as the DNS server. You can run
+a small caching server listening on 127.0.0.1 (which may be a good idea
+anyway), or use your operating system's firewall to transparently redirect
+queries to 127.0.0.1:53 to your real DNS server. Note that this is only
+necessary if you do DNS lookups - probably this can be avoided?
+
+Please also read the libraries section below.
+
+## Databases
+
+If your mySQL/PostgreSQL accepts connections on a Unix socket which is
+outside of your chroot jail, reconfigure it to listen on a loopback
+address (127.0.0.1).
+
+PHP mail() function
+
+Under Unix, PHP requires a sendmail binary to send mail. Putting this file
+inside your jail may not be sufficient: you would probably need to move
+your mail queue as well. You have three options here:
+
+* install a SMTP-only sendmail clone like sSMTP or nbsmtp. You can then
+  put a single binary inside your jail, and deliver mail via a
+  smarthost.
+* don't use mail(). Use a class/function that knows how to send directly
+  via SMTP (like Pear's Mail)
+* convince PHP developers to make SMTP support a configurable option
+  under Unix, or write a patch yourself - remember to submit it to
+  mod_chroot mailing list for others to use.
+
+## Shared libraries
+
+Shared libraries are libraries which are linked to a program at run-time.
+Nowadays, most programs require some shared libraries to run - libc.so is
+most common. You can see a list of shared libraries a program requires by
+running ldd /path/to/program. Loading of these libraries is done
+automagically by ld.so at startup. mod_chroot doesn't interfere with this
+mechanism.
+
+A program may also explicitly load a shared library by calling dlopen()
+and dlsym(). This might cause troubles in a chrooted environment - after a
+process is chrooted, libraries (usually stored in /lib) might be no longer
+accessible. This doesn't happen very often, but if it does - there is a
+solution: you can preload these libraries before chrooting. Apache has a
+handy directive for that: LoadFile. This is what people reported on the
+mailing list:
+
+* DNS lookups - GNU libc tries to load libnss_dns.so.2 when a first DNS
+lookup is done. Solution:
+
+```
+ LoadFile /lib/libnss_dns.so.2
+```
+* Apache 2.0 with mpm_worker on Linux 2.6 - GNU libc tries to load
+  libgcc_s.so.1 when pthread_cancel is called. Solution:
+
+```
+ LoadFile /lib/libgcc_s.so.1
+```

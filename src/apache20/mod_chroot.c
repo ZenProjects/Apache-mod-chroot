@@ -1,3 +1,4 @@
+#include <dlfcn.h>
 #include "ap_config.h"
 #include "httpd.h"
 #include "http_config.h"
@@ -7,7 +8,7 @@
 #include "apr.h"
 #include "apr_pools.h"
 
-#define MODULE_SIGNATURE "mod_chroot/0.3"
+#define MODULE_SIGNATURE "mod_chroot/0.4"
 module AP_MODULE_DECLARE_DATA chroot_module;
 
 typedef struct {
@@ -51,6 +52,7 @@ static const char *cmd_chroot_dir(cmd_parms *cmd, void *dummy, const char *p1) {
 	cfg->chroot_dir=(char *)p1;
 	return NULL;
 }
+
 
 static int chroot_init(apr_pool_t *p, apr_pool_t *plog, apr_pool_t *ptemp, server_rec *s) {
 chroot_srv_config *cfg = (chroot_srv_config *)ap_get_module_config(s->module_config, &chroot_module);

@@ -1,8 +1,14 @@
 2004-04-06	Hobbit
 	* mod_chroot/0.1 - initial release
 
-2004-04-08
+2004-04-08	Hobbit
 	* mod_chroot/0.2 - no getppid() heuristics when EAPI is available.
 
-2004-11-31
+2004-11-31	Hobbit
 	* mod_chroot/0.3 - with Apache 2.0 support
+	
+2005-01-09	Hobbit
+	* getenv()/setenv() instead of flaky getppid().
+	* fixed layout to make <IfModule> work as expected.
+	* documentation updates.
+	* released mod_chroot/0.4

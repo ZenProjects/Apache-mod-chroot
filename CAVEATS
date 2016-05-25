@@ -9,6 +9,8 @@ DNS lookups
    queries to 127.0.0.1:53 to your real DNS server. Note that this is only
    necessary if you do DNS lookups - probably this can be avoided?
 
+   Please also read the libraries section below.
+
 Databases
 
    If your mySQL/PostgreSQL accepts connections on a Unix socket which is
@@ -29,6 +31,33 @@ PHP mail() function
      * convince PHP developers to make SMTP support a configurable option
        under Unix, or write a patch yourself - remember to submit it to
        mod_chroot mailing list for others to use.
+
+Shared libraries
+
+   Shared libraries are libraries which are linked to a program at run-time.
+   Nowadays, most programs require some shared libraries to run - libc.so is
+   most common. You can see a list of shared libraries a program requires by
+   running ldd /path/to/program. Loading of these libraries is done
+   automagically by ld.so at startup. mod_chroot doesn't interfere with this
+   mechanism.
+
+   A program may also explicitly load a shared library by calling dlopen()
+   and dlsym(). This might cause troubles in a chrooted environment - after a
+   process is chrooted, libraries (usually stored in /lib) might be no longer
+   accessible. This doesn't happen very often, but if it does - there is a
+   solution: you can preload these libraries before chrooting. Apache has a
+   handy directive for that: LoadFile. This is what people reported on the
+   mailing list:
+
+     * DNS lookups - GNU libc tries to load libnss_dns.so.2 when a first DNS
+       lookup is done. Solution:
+
+ LoadFile /lib/libnss_dns.so.2
+
+     * Apache 2.0 with mpm_worker on Linux 2.6 - GNU libc tries to load
+       libgcc_s.so.1 when pthread_cancel is called. Solution:
+
+ LoadFile /lib/libgcc_s.so.1
 
 Others?
 

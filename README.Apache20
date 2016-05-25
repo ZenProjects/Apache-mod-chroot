@@ -12,14 +12,23 @@
    after a chroot(2) call; when control is handed to MPM, Apache is already
    inside a jail. And MPMs need to create some files during startup (at least
    one, a pidfile) - these have to be placed inside the jail. I suggest
-   creating a special directory for these files inside your jail. For
-   example, you can create /var/www/apache for these files and put your web
-   pages in /var/www/web. Then, put the following in httpd.conf:
+   creating a special directory for these files inside your jail,
+   /var/www/var/run:
 
+ # mkdir -p /var/www/var/run
+ # chown -R root.root /var/www/var/run
+
+   Then, put the following in httpd.conf:
+
+ PidFile /var/run/httpd.pid
  ChrootDir /var/www
- DocumentRoot /web
- PidFile /apache/httpd.pid
+ DocumentRoot /
  ... other MPM directives (LockFile? ScoreBoardFile?)
+
+   Remember that you'll also need to link /var/run/httpd.pid to
+   /var/www/var/run/httpd.pid to keep apachectl happy:
+
+ ln -s /var/www/var/run/httpd.pid /var/run/httpd.pid
 
    Note that this only applies to MPMs. All "normal" Apache modules will be
    initialized before chroot(2) call is done; all files required by these
@@ -38,7 +47,7 @@ PidFile
                This one is probably unavoidable. Apache's pidfile needs to be 
       Notes    stored inside the jail. Use:                                   
                                                                               
-               PidFile /apache/httpd.pid                                      
+               PidFile /var/run/httpd.pid                                     
 
 AcceptMutex
 
@@ -62,7 +71,7 @@ LockFile
                anything different than flock or fcntl, you'll need to store   
       Notes    the lockfile inside the jail. Use:                             
                                                                               
-               LockFile /apache/httpd.lock                                    
+               LockFile /var/run/httpd.lock                                   
 
 CoreDumpDirectory
 
@@ -74,7 +83,7 @@ CoreDumpDirectory
       Notes    to create the coredump there anyway and discards it. If you    
                really want to analyze the dumps, use:                         
                                                                               
-               CoreDumpDirectory /apache                                      
+               CoreDumpDirectory /var/run                                     
 
 ScoreBoardFile
 
@@ -85,4 +94,4 @@ ScoreBoardFile
                shared memory. If your architecture doesn't support that, a    
       Notes    file will be used. If this is your case, use:                  
                                                                               
-               ScoreBoardFile /apache/httpd.scoreboard                        
+               ScoreBoardFile /var/run/httpd.scoreboard                       

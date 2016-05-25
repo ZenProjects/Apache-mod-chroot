@@ -85,6 +85,11 @@ Contact
        Send an empty e-mail to modchroot-subscribe@core.segfault.pl to
        subscribe. Users who are not subscribed are not allowed to post.
 
+   mod_chroot mailing list is also available via GMane (as
+   gmane.comp.apache.mod-chroot.general). GMane also has a nice archive
+
+   .
+
 Prior art
 
    I needed a simple module just to perform chroot at startup. Before I

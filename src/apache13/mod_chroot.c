@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "httpd.h"
 #include "http_config.h"
 #include "http_core.h"
@@ -9,7 +10,7 @@
 #include "http_conf_globals.h"
 #endif
 
-#define MODULE_SIGNATURE "mod_chroot/0.3"
+#define MODULE_SIGNATURE "mod_chroot/0.4"
 module MODULE_VAR_EXPORT chroot_module;
 
 typedef struct {
@@ -23,8 +24,15 @@ typedef struct {
 #endif
 
 int chroot_init_now() {
+	
 #ifndef EAPI
-	return (getppid()==1);
+	if(getenv("APACHE_MOD_CHROOT_INIT")!=NULL) {
+		unsetenv("APACHE_MOD_CHROOT_INIT");
+		return 1;
+	} else {
+		setenv("APACHE_MOD_CHROOT_INIT", "", 0);
+		return 0;
+	}
 #else
 chroot_ctx_rec *m;
 
@@ -49,6 +57,8 @@ pool *p;
 		ap_ctx_set(ap_global_ctx, "chroot_module", m);
 	}
 	return;
+#else
+	unsetenv("__APACHE_MOD_CHROOT_INIT");
 #endif
 }
 	
@@ -71,7 +81,7 @@ chroot_srv_config *cfg = (chroot_srv_config *)ap_get_module_config(s->module_con
 		}
 #ifndef EAPI
 		ap_log_error(APLOG_MARK, APLOG_NOTICE | APLOG_NOERRNO, s,
-		"mod_chroot: changed root to %s (getppid() magic).",
+		"mod_chroot: changed root to %s (environment magic).",
 		cfg->chroot_dir);
 #else
 		ap_log_error(APLOG_MARK, APLOG_NOTICE | APLOG_NOERRNO, s,

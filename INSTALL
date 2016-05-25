@@ -8,17 +8,9 @@ Building
 
 Building mod_chroot: Apache 1.3 static module
 
-   If you're building Apache from source, please consider applying EAPI
-   patches - it will make mod_chroot more reliable. Applying EAPI patches is
-   covered by EAPI
-
     1. Go to Apache source directory and type
 
- ./configure --add-module /usr/src/mod_chroot-x.y/src/mod_chroot13.c
-
-       or, if you applied EAPI patches, use
-
- ./configure --enable-rule=eapi --add-module /usr/src/mod_chroot-x.y/src/mod_chroot13.c
+ ./configure --add-module /usr/src/mod_chroot-x.y/src/apache13/mod_chroot.c
 
        Replace /usr/src with a directory where you unpacked the tarball. Add
        other configure options if needed.

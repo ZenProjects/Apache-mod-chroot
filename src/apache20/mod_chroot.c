@@ -190,6 +190,8 @@ static void chroot_child_init(apr_pool_t *p, server_rec *s)
 static void register_hooks(apr_pool_t *p) {
         static const char * const chrootPre[] = { 
 		"http_core.c", 
+		"mod_fcgid.c", 		
+		"mod_cgid.c",
 		NULL 
 	};
         ap_hook_pre_mpm(chroot_pre_mpm, chrootPre, NULL, APR_HOOK_REALLY_LAST);	

@@ -19,3 +19,17 @@
 	  Patch by <clement.hermann*free.fr>, thanks!
 	* updated documentation
 	* released mod_chroot/0.5
+2006-12-26	Mathieu CARBONNEAUX
+	* released mod_chroot/0.6 for apache 2.0 version
+	* fixed a problem restart apache chrooted in moving chrooting a
+	  childinit phase. that fixed also most libraries problem, all module that are loader
+	  with apache no need to include librarie in the chroot.
+	* all file (pid, lockfile, scoreboard...) that are created in mpm phase are created outside the jail 
+	  without probleme beceause the jail is setup at child_init phase...
+	* fixe documentroot problem with chroot that need to exist in chroot
+	  and outside the chroot : now when activate mod_chroot they set automaticly the chroot directory to the document root... 
+	  to acheave that they transparantly rewrite all file path internaly in apache like mod_alias 
+	  to fake all programme and module of apache. with that no more need to 
+	  trick with document root in chroot and outside chroot...
+	* fake also coredumpdirectory to permit core dump normaly if they are activated...
+	  

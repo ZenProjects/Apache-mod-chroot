@@ -1,0 +1,37 @@
+                                   mod_chroot
+
+   There are two ways to build mod_chroot - compile Apache with mod_chroot
+   (static), or build a Dynamic Shared Object (DSO). Please remember that you
+   still need to configure mod_chroot to take advantage of it. Read the
+   manual.
+
+Apache 1.3 static module
+
+    1. Go to Apache source directory and type
+
+ ./configure --add-module /usr/src/mod_chroot-0.1/mod_chroot.c
+
+       Replace /usr/src with a directory where you unpacked the tarball. Add
+       other configure options if needed.
+    2. Compile and install Apache
+
+ make && make install
+
+    3. Start Apache with mod_chroot built in
+
+ apachectl start
+
+Apache 1.3 dynamic module (DSO)
+
+   You will need apxs and Apache headers. If you compiled Apache from source
+   you already have these headers. If you use Debian, you need to install
+   apache-dev.
+    1. Go to mod_chroot source directory and type:
+
+ apxs -cia mod_chroot.c
+
+    2. Start Apache
+
+ apachectl start
+
+   Back to INDEX

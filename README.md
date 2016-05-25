@@ -87,8 +87,8 @@ Ex. this are ok:
 
 Ex. this are not ok:
 ```
-        ChrootDir /srv/www1
-        DocumentRoot /htdocs/www1
+	ChrootDir /srv/www1
+	DocumentRoot /htdocs/www1
 	CoreDumpDirectory /dump/www1
 ```
 

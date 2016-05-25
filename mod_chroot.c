@@ -1,6 +1,6 @@
 #include "mod_chroot.h"
 
-#define MODULE_SIGNATURE "mod_chroot/1.0"
+#define MODULE_SIGNATURE "mod_chroot/1.0.1"
 module AP_MODULE_DECLARE_DATA chroot_module;
 
 typedef struct {

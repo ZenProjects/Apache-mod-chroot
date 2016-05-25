@@ -1,0 +1,88 @@
+                                   mod_chroot
+
+   Starting from version 0.3 mod_chroot supports both Apache 1.3 and 2.0.
+   While most problems with Apache 1.3 are solved in 2.0 (no more module
+   ordering hassle, no need to apply EAPI patches), architecture changes that
+   appeared in 2.0 created one new problem: multi-processing modules (MPMs).
+   MPMs are core Apache modules responsible for handling requests and
+   dispatching them to child processes/threads.
+
+   Unfortunately, MPMs are initialized after all "normal" Apache modules.
+   This basically means that with mod_chroot, MPM initialization is done
+   after a chroot(2) call; when control is handed to MPM, Apache is already
+   inside a jail. And MPMs need to create some files during startup (at least
+   one, a pidfile) - these have to be placed inside the jail. I suggest
+   creating a special directory for these files inside your jail. For
+   example, you can create /var/www/apache for these files and put your web
+   pages in /var/www/web. Then, put the following in httpd.conf:
+
+ ChrootDir /var/www
+ DocumentRoot /web
+ PidFile /apache/httpd.pid
+ ... other MPM directives (LockFile? ScoreBoardFile?)
+
+   Note that this only applies to MPMs. All "normal" Apache modules will be
+   initialized before chroot(2) call is done; all files required by these
+   modules can safely be stored outside of the jail.
+
+   Below I put a short list of MPM directives affected by mod_chroot.
+   "Description" and "MPM" lines in this list are taken directly from Apache
+   2.0 documentation. Note that in most cases I tested only one special file
+   inside a jail is required: a pidfile. Your mileage may vary.
+
+PidFile
+
+   Description File where the server records the process ID of the daemon     
+      MPMs     beos, leader, mpm_winnt, mpmt_os2, perchild, prefork,          
+               threadpool, worker                                             
+               This one is probably unavoidable. Apache's pidfile needs to be 
+      Notes    stored inside the jail. Use:                                   
+                                                                              
+               PidFile /apache/httpd.pid                                      
+
+AcceptMutex
+
+   Description Method that Apache uses to serialize multiple children         
+               accepting requests on network sockets                          
+      MPMs     leader, perchild, prefork, threadpool, worker                  
+               If this directive is not set (or set to Default), the          
+               compile-time selected default is used. Under all systems I     
+               tested this default uses shared memory (posixsem, sysvsem or   
+      Notes    pthread). Two other methods (flock and fcntl) require access   
+               to a file (set with LockFile). If your Apache complains about  
+               LockFile being unaccessible, try setting AcceptMutex to        
+               sysvsem, posixsem or pthread. If your Apache doesn't support   
+               them, try flock or fcntl and see LockFile.                     
+
+LockFile
+
+   Description Location of the accept serialization lock file                 
+      MPMs     leader, perchild, prefork, threadpool, worker                  
+               If your system doesn't allow you to set AcceptMutex to         
+               anything different than flock or fcntl, you'll need to store   
+      Notes    the lockfile inside the jail. Use:                             
+                                                                              
+               LockFile /apache/httpd.lock                                    
+
+CoreDumpDirectory
+
+   Description Directory where Apache attempts to switch before dumping core  
+      MPMs     beos, leader, mpm_winnt, perchild, prefork, threadpool, worker 
+               You don't need this one unless you're debugging Apache.        
+               Default value for this directive is the directory set with     
+               ServerRoot, which is usually owned by root; Apache is unable   
+      Notes    to create the coredump there anyway and discards it. If you    
+               really want to analyze the dumps, use:                         
+                                                                              
+               CoreDumpDirectory /apache                                      
+
+ScoreBoardFile
+
+   Description Location of the file used to store coordination data for the   
+               child processes                                                
+      MPMs     beos, leader, mpm_winnt, perchild, prefork, threadpool, worker 
+               If this directive is not specified, Apache will try to use     
+               shared memory. If your architecture doesn't support that, a    
+      Notes    file will be used. If this is your case, use:                  
+                                                                              
+               ScoreBoardFile /apache/httpd.scoreboard                        

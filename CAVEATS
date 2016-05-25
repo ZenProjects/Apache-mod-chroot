@@ -27,11 +27,10 @@ PHP mail() function
      * don't use mail(). Use a class/function that knows how to send directly
        via SMTP (like Pear's Mail)
      * convince PHP developers to make SMTP support a configurable option
-       under Unix
+       under Unix, or write a patch yourself - remember to submit it to
+       mod_chroot mailing list for others to use.
 
 Others?
 
    Did you have other problems with Apache+mod_chroot? Please send your
    experiences to the mailing list, I'll publish them here.
-
-

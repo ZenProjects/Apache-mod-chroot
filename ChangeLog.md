@@ -1,26 +1,26 @@
-2004-04-06	Hobbit
+- 2004-04-06	Hobbit
 	* mod_chroot/0.1 - initial release
 
-2004-04-08	Hobbit
+- 2004-04-08	Hobbit
 	* mod_chroot/0.2 - no getppid() heuristics when EAPI is available.
 
-2004-11-31	Hobbit
+- 2004-11-31	Hobbit
 	* mod_chroot/0.3 - with Apache 2.0 support
 	
-2005-01-09	Hobbit
+- 2005-01-09	Hobbit
 	* getenv()/setenv() instead of flaky getppid().
 	* fixed layout to make <IfModule> work as expected.
 	* documentation updates.
 	* released mod_chroot/0.4
 
-2005-06-12	Hobbit
+- 2005-06-12	Hobbit
 	* fixed a problem with some CGIs (mod_cgid, mod_fcgid)
 	  being executed outside the chroot jail.
 	  Patch by <clement.hermann*free.fr>, thanks!
 	* updated documentation
 	* released mod_chroot/0.5
 
-2008-02-18	Mathieu CARBONNEAUX
+- 2008-02-18	Mathieu CARBONNEAUX
 	* released mod_chroot/1.0beta1
 	* only apache 2.x
 	* transparente chroot (ChrootFixRoot option)
@@ -37,7 +37,10 @@
 	  trick with document root in chroot and outside chroot...
 	* fake also coredumpdirectory to permit core dump normaly if they are activated...
 
-2008-05-05	Mathieu CARBONNEAUX
+- 2008-05-05	Mathieu CARBONNEAUX
 	* released mod_chroot/1.0beta2
 	* simplification, fixing some hints...
 	* clarifying...
+	
+- 2016-05-25 Mathieu CARBONNEAUX
+	* poste on github and cleanup documentation

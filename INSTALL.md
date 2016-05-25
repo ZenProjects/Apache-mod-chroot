@@ -43,7 +43,7 @@ Define the chroot virtual path base.
 Example: if you store your www files in /var/www and you want to
 make it as "virtual root", set ChrootDir this path. 
       
-- You can use apache server root relative path.
+#### You can use apache server root relative path.
 
 Example: 
 ```
@@ -52,7 +52,7 @@ Example:
 
 if the server root is /srv/www1 and ChrootDir is set to "chroot" while point to /srv/www1/chroot directory
 
-- you can use some hints to set the chroot directory to value with apache internal value:
+#### you can use some hints to set the chroot directory to value with apache internal value:
 
 "DOCUMENT_ROOT" => set the chroot to the globale apache document root value.
              (to use this you must set documentroot before ChrootDir cmd).

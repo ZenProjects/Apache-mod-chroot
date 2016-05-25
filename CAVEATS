@@ -1,0 +1,37 @@
+                                   mod_chroot
+
+DNS lookups
+
+   libresolv uses /etc/resolv.conf to find your DNS server. If this file
+   doesn't exist, libresolv uses 127.0.0.1:53 as the DNS server. You can run
+   a small caching server listening on 127.0.0.1 (which may be a good idea
+   anyway), or use your operating system's firewall to transparently redirect
+   queries to 127.0.0.1:53 to your real DNS server. Note that this is only
+   necessary if you do DNS lookups - probably this can be avoided?
+
+Databases
+
+   If your mySQL/PostgreSQL accepts connections on a Unix socket which is
+   outside of your chroot jail, reconfigure it to listen on a loopback
+   address (127.0.0.1).
+
+PHP mail() function
+
+   Under Unix, PHP requires a sendmail binary to send mail. Putting this file
+   inside your jail may not be sufficient: you would probably need to move
+   your mail queue as well. You have three options here:
+
+     * install a SMTP-only sendmail clone like sSMTP or nbsmtp. You can then
+       put a single binary inside your jail, and deliver mail via a
+       smarthost.
+     * don't use mail(). Use a class/function that knows how to send directly
+       via SMTP (like Pear's Mail)
+     * convince PHP developers to make SMTP support a configurable option
+       under Unix
+
+Others?
+
+   Did you have other problems with Apache+mod_chroot? Please send your
+   experiences to the mailing list, I'll publish them here.
+
+

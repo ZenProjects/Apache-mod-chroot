@@ -1,0 +1,6 @@
+2004-04-06	Hobbit
+	* mod_chroot/0.1 - initial release
+
+2004-04-08
+	* mod_chroot/0.2 - no getppid() heuristics when EAPI is available.
+

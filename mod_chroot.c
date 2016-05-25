@@ -4,38 +4,87 @@
 #include "http_main.h"
 #include "http_log.h"
 
+#ifdef EAPI
+#include "ap_ctx.h"
+#include "http_conf_globals.h"
+#endif
+
 module MODULE_VAR_EXPORT chroot_module;
-#define MODULE_SIGNATURE "mod_chroot/0.1"
+#define MODULE_SIGNATURE "mod_chroot/0.2"
 
 typedef struct {
 	char *chroot_dir;
 } chroot_srv_config;
+
+#ifdef EAPI
+typedef struct {
+	int initcount;
+} chroot_ctx_rec;
+#endif
+
+int chroot_init_now() {
+#ifndef EAPI
+	return (getppid()==1);
+#else
+chroot_ctx_rec *m;
+
+	m=(chroot_ctx_rec *)ap_ctx_get(ap_global_ctx, "chroot_module");
+	if(m->initcount==0) {
+		m->initcount=1;
+		return 0;
+	} else return 1;
+#endif
+}
+
+void chroot_init_ctx() {
+#ifdef EAPI
+chroot_ctx_rec *m;
+pool *p;
+
+	m=ap_ctx_get(ap_global_ctx, "chroot_module");
+	if(m==NULL) {
+		p=ap_make_sub_pool(NULL);
+		m=ap_palloc(p, sizeof(chroot_ctx_rec));
+		m->initcount=0;
+		ap_ctx_set(ap_global_ctx, "chroot_module", m);
+	}
+	return;
+#endif
+}
+	
 
 void chroot_init(server_rec *s, pool *p) {
 chroot_srv_config *cfg = (chroot_srv_config *)ap_get_module_config(s->module_config, &chroot_module);
 
 	ap_add_version_component(MODULE_SIGNATURE);
 	if(cfg->chroot_dir==NULL) return;
-	if(getppid()==1) {
+	chroot_init_ctx();
+	if(chroot_init_now()) {
 		if(chroot(cfg->chroot_dir)<0) {
-		 ap_log_error(APLOG_MARK, APLOG_ERR | APLOG_NOERRNO, s, 
-		  "mod_chroot: chroot to %s failed: %s", cfg->chroot_dir, strerror(errno));
+		 ap_log_error(APLOG_MARK, APLOG_ERR, s, "chroot to %s failed.",
+			cfg->chroot_dir);
 		 return;
 		}
 		if(chdir("/")<0) {
-		 ap_log_error(APLOG_MARK, APLOG_ERR | APLOG_NOERRNO, s,
-		  "mod_chroot: chdir to / failed: %s", strerror(errno));
+		 ap_log_error(APLOG_MARK, APLOG_ERR, s, "chdir to / failed.");
 		 return;
 		}
-		ap_log_error(APLOG_MARK, APLOG_NOTICE | APLOG_NOERRNO, s, "mod_chroot: changed root to %s",
-		  cfg->chroot_dir);
+#ifndef EAPI
+		ap_log_error(APLOG_MARK, APLOG_NOTICE | APLOG_NOERRNO, s,
+		"mod_chroot: changed root to %s (getppid() magic).",
+		cfg->chroot_dir);
+#else
+		ap_log_error(APLOG_MARK, APLOG_NOTICE | APLOG_NOERRNO, s,
+		"mod_chroot: changed root to %s (EAPI mode).",
+		cfg->chroot_dir);
+#endif
 	}
 }
 
 static void *chroot_create_srv_config(pool *p, server_rec *s) {
 chroot_srv_config *cfg = (chroot_srv_config *)ap_pcalloc(p, sizeof(chroot_srv_config));
 if(cfg==NULL) return NULL;
-
+	chroot_init_ctx();
 	cfg->chroot_dir=NULL;
 	return cfg;
 }

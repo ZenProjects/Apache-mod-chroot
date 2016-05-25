@@ -1,0 +1,24 @@
+                                   mod_chroot
+
+Applying EAPI patches
+
+   Apache modules are initialized twice. mod_chroot needs to perform chroot()
+   during the second time. Unfortunately, there is no easy way to tell if we
+   are initialized for the first or second time. mod_chroot checks if the
+   parent PID is 1 (init), but this sometimes fails. EAPI (part of mod_ssl)
+   solves this problem - it allows modules to store persistent information.
+
+   EAPI is a patch for Apache. You don't need to install mod_ssl to apply
+   this patch. That's how:
+
+    1. Download mod_ssl for your Apache version from www.modssl.org
+    2. Unpack the tarball and apply the patch:
+
+ tar -xzf mod_ssl-x.y.z-a.b.c.tar.gz
+ cd mod_ssl-x.y.z-a.b.c
+ ./configure --with-apache=/patch/to/apache --with-eapi-only
+
+   Congratulations! You now have EAPI-enabled Apache!
+
+
+

@@ -1,15 +1,24 @@
                                    mod_chroot
 
+Building
+
    There are two ways to build mod_chroot - compile Apache with mod_chroot
    (static), or build a Dynamic Shared Object (DSO). Please remember that you
-   still need to configure mod_chroot to take advantage of it. Read the
-   manual.
+   still need to configure mod_chroot to take advantage of it.
 
-Apache 1.3 static module
+Building mod_chroot: Apache 1.3 static module
+
+   If you're building Apache from source, please consider applying EAPI
+   patches - it will make mod_chroot more reliable. Applying EAPI patches is
+   covered by EAPI
 
     1. Go to Apache source directory and type
 
- ./configure --add-module /usr/src/mod_chroot-0.1/mod_chroot.c
+ ./configure --add-module /usr/src/mod_chroot-x.y/mod_chroot.c
+
+       or, if you applied EAPI patches, use
+
+ ./configure --enable-rule=eapi --add-module /usr/src/mod_chroot-x.y/mod_chroot.c
 
        Replace /usr/src with a directory where you unpacked the tarball. Add
        other configure options if needed.
@@ -21,11 +30,12 @@ Apache 1.3 static module
 
  apachectl start
 
-Apache 1.3 dynamic module (DSO)
+Building mod_chroot: Apache 1.3 dynamic module (DSO)
 
    You will need apxs and Apache headers. If you compiled Apache from source
    you already have these headers. If you use Debian, you need to install
    apache-dev.
+
     1. Go to mod_chroot source directory and type:
 
  apxs -cia mod_chroot.c
@@ -34,4 +44,46 @@ Apache 1.3 dynamic module (DSO)
 
  apachectl start
 
-   Back to INDEX
+Configuration
+
+   mod_chroot provides only one configuration directive - ChrootDir. It can
+   only be used in main server configuration. You can't put ChrootDir inside
+   a <Directory>, <Files>, <Location>, <VirtualHost> sections or .htaccess
+   files. Example: if you store your www files in /var/www and you want to
+   make it a "virtual root", put
+
+ ChrootDir /var/www
+
+   in httpd.conf. Remember that ChrootDir affects DocumentRoot: if you had
+   DocumentRoot pointing to "/var/www", you should now change it to "/" -
+   otherwise Apache will be looking for "/var/www" inside of your root.
+
+Module ordering
+
+   Apache needs access to the whole filesystem during startup. That's why
+   mod_chroot must be loaded as the last one - after all other modules are
+   initialized and ready. To accomplish this, you need to put a
+   LoadModule/AddModule line for mod_chroot as the first one - Apache modules
+   are loaded/activated in reverse order.
+
+   If you compiled all Apache modules as DSOs, this is easy. Just put
+
+ LoadModule chroot_module /usr/lib/apache/1.3/mod_chroot.so
+
+   before all other LoadModule lines. Remember to replace the second argument
+   with a real path to mod_chroot.so
+
+   If you have some static modules (and mod_chroot is compiled into Apache),
+   you may need to use ClearModuleList to put mod_chroot at the beginning of
+   the list, followed by other static modules you need.
+
+ ClearModuleList
+ AddModule mod_chroot.c
+ AddModule ...
+ AddModule ...
+
+   You can get a list of all builtin modules with
+
+ httpd -l
+
+

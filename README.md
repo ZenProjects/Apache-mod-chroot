@@ -45,23 +45,72 @@
    files. The chroot() system call is performed at the end of startup
    procedure - when all libraries are loaded and log files open. 
 
+## Major change between 0.x and 1.x version:
+
+Starting from version 0.3 mod_chroot supports apache 2.0.
+While most problems with Apache 1.3 are solved in 2.0 (no more module
+ordering hassle, no need to apply EAPI patches), architecture changes that
+appeared in 2.0 created one new problem: multi-processing modules (MPMs).
+MPMs are core Apache modules responsible for handling requests and
+dispatching them to child processes/threads.
+
+Unfortunately, MPMs are initialized after all "normal" Apache modules.
+This basically means that with mod_chroot, MPM initialization is done
+after a chroot(2) call; when control is handed to MPM, Apache is already
+inside a jail. And MPMs need to create some files during startup (at least
+one, a pidfile) - these have to be placed inside the jail. 
+
+Once chrooted, Apache cannot access anything located above ChrootDir. For
+that reason restarting Apache with 'apachectl reload', 'apachectl
+graceful' or 'kill -HUP apache_pid' will not work as expected. Apache will
+not be able to read its config file, open logs or load modules.
+
+Starting with the 1.0 of mod_chroot all this probleme are fixed. 
+
+- In first problem are resolved by placing the chroot in child_init, after the mpm initialisation,
+  in that way they don't need to place pid file, scoreboard, Lock File inside the jail.
+
+- And the seconds probleme are command like "DocumentRoot" and "CoreDumpDirectory" that are tested a start of the server, 
+  that make oblige to point to real directory outside the chroot and in the chroot... 
+  This proleme is resolved by faking all map to storage transparantly like mod_alias (by setting ChrootFixRoot option).
+  This also fake the CoreDumpDirectory directory.
+
+in that way using mod_chroot is simple like to load the module and set the chroot dir...
+the only constraint are to set document root and coredump directory in the path of the chroot dir...
+
+Ex. this are ok:
+```
+	ChrootDir /srv/www1
+	DocumentRoot /srv/www1/htdocs
+	CoreDumpDirectory /srv/www1/dump
+```
+
+Ex. this are not ok:
+```
+        ChrootDir /srv/www1
+        DocumentRoot /htdocs/www1
+	CoreDumpDirectory /dump/www1
+```
+
 ## Requirement
 
-   in order to build this module you need:
-   - apxs (shipped as apxs2 by some distributors) and Apache
-     headers. If you compiled Apache from source you already have these
-     headers. If you use Debian, you need to install apache2-prefork-dev or
-     apache2-threaded-dev.
-   - Make
-   - C compiler (ex:gcc).
+in order to build this module you need:
 
-   Starting 1.0 they support only Apache 2.0.
-   It has been tested with Apache 2.0.49/59 and 2.2.4 under Linux 2.6.  It should
-   work under older versions of Apache 2.0 as well. 
+- apxs (shipped as apxs2 by some distributors) and Apache
+  headers. If you compiled Apache from source you already have these
+  headers. If you use Debian, you need to install apache2-prefork-dev or
+  apache2-threaded-dev.
+- Make
+- C compiler (ex:gcc).
+
+Starting 1.0 they support only Apache 2.0.
+
+It has been tested with Apache 2.0.49/59 and 2.2.4 under Linux 2.6.  It should
+work under older versions of Apache 2.0 as well. 
 
 ## Building mod_chroot
 
-   1 - Go to mod_chroot source directory and type:
+1 - Go to mod_chroot source directory and type:
 
 ````
 	# ./configure --with-apxs=/path/to/apxs
@@ -69,7 +118,7 @@
 	# make install
 ```
 
-   2 - add in your httpd.conf the loading of the module:
+2 - add in your httpd.conf the loading of the module:
 
 ```
        <IfModule !mod_chroot.c>

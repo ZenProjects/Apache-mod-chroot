@@ -43,4 +43,4 @@
 	* clarifying...
 	
 - 2016-05-25 Mathieu CARBONNEAUX
-	* poste on github and cleanup documentation
+	* post on github and cleanup documentation

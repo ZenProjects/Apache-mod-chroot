@@ -54,11 +54,11 @@ if the server root is /srv/www1 and ChrootDir is set to "chroot" while point to 
 
 #### you can use some hints to set the chroot directory to value with apache internal value:
 
-"DOCUMENT_ROOT" => set the chroot to the globale apache document root value.
-             (to use this you must set documentroot before ChrootDir cmd).
+- "DOCUMENT_ROOT" => set the chroot to the globale apache document root value. 
+  (to use this you must set documentroot before ChrootDir cmd).
 
-"SERVER_ROOT" => set the chroot to the apache server root.
-           (-d args of httpd, or ServerRoot apache directive)
+- "SERVER_ROOT" => set the chroot to the apache server root.
+  (-d args of httpd, or ServerRoot apache directive)
 
 Example: 
 ```

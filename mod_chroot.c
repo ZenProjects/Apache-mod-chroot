@@ -138,7 +138,7 @@ static int chroot_translate_name(request_rec *r)
 	 if (chroot_dirtofix(r->server->process->pconf, r->server, (char**)&corecfg->ap_document_root, cfg->chroot_dir,FALSE)!=OK) 
 	 {
 	    ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, 
-	          "chroot_translate_name[%d]: could not fix ap_document_root <%s>.",getpid(),ap_document_root);
+	          "chroot_translate_name[%d]: could not fix ap_document_root <%s>.",getpid(),(char * )ap_document_root);
 	    return DECLINED;
 	 }
 	 ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, 

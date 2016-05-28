@@ -6,7 +6,7 @@ mod_chroot makes running Apache in a secure chroot environment easy. You
 don't need to create a special directory hierarchy containing /dev, /lib,
 /etc...
 
-this version on github are fork of mod_chroot by hobbit at http://core.segfault.pl/~hobbit/mod_chroot/
+This project are major rewrite of mod_chroot by hobbit at http://core.segfault.pl/~hobbit/mod_chroot/ focused on apache 2 only (removed Apache 1 support).
 
 ## Why chroot?
 

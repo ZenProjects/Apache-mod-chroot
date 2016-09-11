@@ -8,6 +8,7 @@
 #include "http_log.h"
 #include "scoreboard.h"
 #include "unixd.h"
+#include "mod_unixd.h"
 #include "ap_mpm.h"
 #include "mpm_common.h"
 #include "mod_core.h"

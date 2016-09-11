@@ -108,8 +108,9 @@ static int chroot_map_to_storage(request_rec *r)
    return DECLINED; // let a chance to do default map_to_storage
 }
 
-/* translate_name hook: ap_document_root are replace a each request, this fix this documentroot a each request before other module use translate_name hook
-   this fix $_SERVER["DOCUMENT_ROOT"] in php to the chroot
+/* translate_name hook: ap_document_root are replace a each request, 
+   this fix this documentroot a each request before other module use 
+   translate_name hook this fix $_SERVER["DOCUMENT_ROOT"] in php to the chroot
 */
 static int chroot_translate_name(request_rec *r)
 {
@@ -169,8 +170,12 @@ static int chroot_pre_mpm(apr_pool_t *p, ap_scoreboard_e sb_type)
 
   // save user defined in apache configuration
   if (cfg->old_user_id==-1) {
+#if MODULE_MAGIC_NUMBER_MAJOR > 20051115
+     cfg->old_user_id=ap_unixd_config.user_id;
+#else
      cfg->old_user_id=unixd_config.user_id;
-     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, "chroot_pre_mpm: store old uid=%d.",unixd_config.user_id);
+#endif
+     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, "chroot_pre_mpm: store old uid=%d.",cfg->old_user_id);
   }
 
   if (cfg->chroot_dir!=NULL)
@@ -178,7 +183,11 @@ static int chroot_pre_mpm(apr_pool_t *p, ap_scoreboard_e sb_type)
     core_server_config *corecfg = ap_get_module_config(ap_server_conf->module_config, &core_module);
     // set user_id = 0 to fake unixd_setup_child made before child_init hook 
     // to make possible to do chroot in child_init hook after
+#if MODULE_MAGIC_NUMBER_MAJOR > 20051115
+    ap_unixd_config.user_id=0;
+#else
     unixd_config.user_id=0;
+#endif
     ap_add_version_component(p, MODULE_SIGNATURE); // add the mod_chroot in the signature...
     ap_log_error(APLOG_MARK, APLOG_NOTICE, 0, ap_server_conf, 
              "chroot_pre_mpm: configured chroot dir are <%s>.",cfg->chroot_dir);
@@ -271,11 +280,16 @@ static void chroot_child_init(apr_pool_t *p, server_rec *s)
       }
 
       // restore the real user_id and call unixd_setup_child to apply it
+#if MODULE_MAGIC_NUMBER_MAJOR > 20051115
+      ap_unixd_config.user_id=cfg->old_user_id;
+      if (ap_unixd_setup_child()) {
+#else
       unixd_config.user_id=cfg->old_user_id;
       if (unixd_setup_child()) {
+#endif
 	  exit(APEXIT_CHILDFATAL);
       }
-      ap_log_error(APLOG_MARK, APLOG_NOTICE, 0, s, "chroot_child_init[%d]: uid restored to %d.",getpid(),unixd_config.user_id);
+      ap_log_error(APLOG_MARK, APLOG_NOTICE, 0, s, "chroot_child_init[%d]: uid restored to %d.",getpid(),cfg->old_user_id);
 
     }
 

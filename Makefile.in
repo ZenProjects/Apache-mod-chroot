@@ -7,7 +7,11 @@ $(MODULE_NAME).la: $(MODULE_NAME).c
 	$(APXS) -c $(MODULE_NAME).c
 
 install: $(MODULE_NAME).la
-	$(APXS) -i -n $(MODULE_NAME) $(MODULE_NAME).la
+	if [ "$(LIBEXECDIR)" != "" ]; then \
+	$(APXS) -i -S LIBEXECDIR="$(LIBEXECDIR)" -n $(MODULE_NAME) $(MODULE_NAME).la; \
+	else \
+	$(APXS) -i -n $(MODULE_NAME) $(MODULE_NAME).la;  \
+	fi
 
 clean:
 	-rm -f $(MODULE_NAME).o $(MODULE_NAME).lo $(MODULE_NAME).la $(MODULE_NAME).slo 

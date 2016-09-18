@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ZenProjects/Apache-mod-chroot.svg?branch=master)](https://travis-ci.org/ZenProjects/Apache-mod-chroot)
+
 # mod_chroot
 
 ## What is it?

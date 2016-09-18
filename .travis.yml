@@ -1,0 +1,12 @@
+sudo: required
+dist: trusty
+language: c
+compiler: gcc
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install gcc
+  - sudo apt-get install apache2-dev
+install: 
+  - ./configure --with-apxs=/usr/bin/apxs
+script:
+  - make

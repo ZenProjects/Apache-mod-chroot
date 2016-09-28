@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ZenProjects/Apache-mod-chroot.svg?branch=master)](https://travis-ci.org/ZenProjects/Apache-mod-chroot)
-[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://img.shields.io/badge/License-GPL%20v2-blue.svg)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.fr.html)
 
 # mod_chroot
 

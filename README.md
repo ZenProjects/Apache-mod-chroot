@@ -257,13 +257,14 @@ Under Unix, PHP requires a sendmail binary to send mail. Putting this file
 inside your jail may not be sufficient: you would probably need to move
 your mail queue as well. You have three options here:
 
-* install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp). You can then
+* Don't use mail(). Use a class/function that knows how to send directly
+  via SMTP :
+  - [Pear's Mail](http://pear.php.net/package/Mail),
+  - [Swiftmailer](http://swiftmailer.org/)),
+* Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp). You can then
   put a single binary inside your jail, and deliver mail via a
-  smarthost.
-* don't use mail(). Use a class/function that knows how to send directly
-  via SMTP (like [Pear's Mail](http://pear.php.net/package/Mail) or [Swiftmailer](http://swiftmailer.org/))
-* convince PHP developers to make SMTP support a configurable option
-  also under Unix.
+  smarthost,
+* Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).
 
 ## Shared libraries
 

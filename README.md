@@ -75,7 +75,7 @@ Starting with the 1.0 of mod_chroot all this probleme are fixed.
 - In first problem are resolved by placing the chroot in child_init, after the mpm initialisation,
   in that way they don't need to place pid file, scoreboard, Lock File inside the jail.
 
-- And the seconds probleme are command like "DocumentRoot" and "CoreDumpDirectory" that are tested a start of the server, 
+- And the seconds probleme are command like "DocumentRoot" and "CoreDumpDirectory" that are tested at start of the server, 
   that make oblige to point to real directory outside the chroot and in the chroot... 
   This proleme is resolved by faking all map to storage transparantly like mod_alias (by setting ChrootFixRoot option).
   This also fake the CoreDumpDirectory directory.
@@ -196,7 +196,7 @@ In that way you can use the real (with DocumentRoot/Alias/UserDir...) path in
 apache configuration file, and this option while translate all real path to relative 
 path to chroot directory (/var/chroot/www is translated to /www if chroot dir is /var/chroot).
 
-#### Example1: if you setup your apache like that.
+#### Example 1: if you setup your apache like that.
 ```
 	ServerRoot /srv/www1
 	DocumentRoot /srv/www1/chroot/htdocs
@@ -208,7 +208,7 @@ path to chroot directory (/var/chroot/www is translated to /www if chroot dir is
 all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
    /htdocs/path/to/mypage because the chroot are /srv/www1/chroot.
 
-#### Example2: if you setup your apache like that.
+#### Example 2: if you setup your apache like that.
 ```
 	ServerRoot /srv/www1
 	DocumentRoot /srv/www1/htdocs
@@ -220,7 +220,7 @@ all request to the server like http://mysserver/path/to/mypage while be transpar
 all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
    /htdocs/path/to/mypage because the chroot are /srv/www1.
 
-#### Example3: if you setup your apache like that.
+#### Example 3: if you setup your apache like that.
 ```
 	ServerRoot /srv/www1
 	DocumentRoot /srv/www1/htdocs
@@ -251,7 +251,7 @@ If your mySQL/PostgreSQL accepts connections on a Unix socket which is
 outside of your chroot jail, reconfigure it to listen on a loopback
 address (127.0.0.1).
 
-PHP mail() function
+## PHP mail() function
 
 Under Unix, PHP requires a sendmail binary to send mail. Putting this file
 inside your jail may not be sufficient: you would probably need to move
@@ -280,8 +280,9 @@ and dlsym(). This might cause troubles in a chrooted environment - after a
 process is chrooted, libraries (usually stored in /lib) might be no longer
 accessible. This doesn't happen very often, but if it does - there is a
 solution: you can preload these libraries before chrooting. Apache has a
-handy directive for that: LoadFile. This is what people reported on the
-mailing list:
+handy directive for that: [LoadFile](https://httpd.apache.org/docs/2.4/mod/mod_so.html#loadfile). 
+
+### For exemple:
 
 * DNS lookups - GNU libc tries to load libnss_dns.so.2 when a first DNS
 lookup is done. Solution:
@@ -289,6 +290,7 @@ lookup is done. Solution:
 ```
  LoadFile /lib/libnss_dns.so.2
 ```
+
 * Apache 2.0 with mpm_worker on Linux 2.6 - GNU libc tries to load
   libgcc_s.so.1 when pthread_cancel is called. Solution:
 

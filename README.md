@@ -110,10 +110,7 @@ in order to build this module you need:
 - Make
 - C compiler (ex:gcc).
 
-Starting 1.0 they support only Apache 2.0.
-
-It has been tested with Apache 2.0.49/59 and 2.2.4 under Linux 2.6.  It should
-work under older versions of Apache 2.0 as well. 
+Warning: starting 1.0 they support only Apache 2.x.
 
 ## Building mod_chroot
 

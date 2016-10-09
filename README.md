@@ -260,7 +260,7 @@ your mail queue as well. You have three options here:
 * Don't use mail(). Use a class/function that knows how to send directly
   via SMTP :
   - [Pear's Mail](http://pear.php.net/package/Mail),
-  - [Swiftmailer](http://swiftmailer.org/)),
+  - [Swiftmailer](http://swiftmailer.org/),
 * Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp). You can then
   put a single binary inside your jail, and deliver mail via a
   smarthost,

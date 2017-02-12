@@ -8,7 +8,10 @@
 #include "http_log.h"
 #include "scoreboard.h"
 #include "unixd.h"
+// apache 2.4 include
+#if AP_MODULE_MAGIC_AT_LEAST(20090401,1)
 #include "mod_unixd.h"
+#endif
 #include "ap_mpm.h"
 #include "mpm_common.h"
 #include "mod_core.h"

@@ -116,8 +116,8 @@ Warning: starting 1.0 they support only Apache 2.x.
 
 1 - Go to mod_chroot source directory and type:
 
-````
-	# ./configure --with-apxs=/path/to/apxs
+```	
+        # ./configure --with-apxs=/path/to/apxs
 	# make
 	# make install
 ```

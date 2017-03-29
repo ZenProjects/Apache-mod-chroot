@@ -1,5 +1,7 @@
 title: Apache Chroot Module
-description: mod_chroot makes running Apache in a secure chroot environment easy. You don't need to create a special directory hierarchy containing /dev, /lib, /etc...
+description: > 
+mod_chroot makes running Apache in a secure chroot environment easy. </br >
+You don't need to create a special directory hierarchy containing /dev, /lib, /etc...
 google_analytics: UA-3441258-7
 show_downloads: true
 theme: jekyll-theme-cayman

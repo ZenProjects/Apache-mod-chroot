@@ -233,7 +233,7 @@ all request to the server like http://mysserver/path/to/mypage while be transpar
 
 ## Date Timezone database
 
-Every time you use the date function, you while get an error saying the timezone db is corrupt. Is why you need localtime and zoneinfo file in the chroot jail.
+Every time you use the **date function** in the chroot jail, you while get an error saying the **timezone db is corrupt**. Is why you need **localtime** and **zoneinfo** file in the chroot jail.
 
 ```
 # mkdir -p /chroot/etc
@@ -252,6 +252,12 @@ queries to 127.0.0.1:53 to your real DNS server. Note that this is only
 necessary if you do DNS lookups - probably this can be avoided?
 
 Please also read the libraries section below beceause libc resolver load dymanics library at first resolution.
+
+To use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail you must map nscd socket in the chroot jail.
+
+```
+# mount -o bind /var/run/nscd /chroot/var/run/nscd
+```
 
 ## Databases
 

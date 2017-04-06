@@ -240,13 +240,21 @@ anyway), or use your operating system's firewall to transparently redirect
 queries to 127.0.0.1:53 to your real DNS server. Note that this is only
 necessary if you do DNS lookups - probably this can be avoided?
 
-Please also read the libraries section below.
+Please also read the libraries section below beceause libc resolver load dymanics library at first resolution.
 
 ## Databases
 
 If your mySQL/PostgreSQL accepts connections on a Unix socket which is
 outside of your chroot jail, reconfigure it to listen on a loopback
 address (127.0.0.1).
+
+With mysql if you try to connect local db you must use `127.0.0.1` in place of `localhost` in connect string, without that mysql client try to use mysql unix sockets in place of using tcp, without that in the chroot jail you cannot connect to db because the socket are generaly outside of the chroot.
+
+You can also map socket in the chroot jail with `mount bind` like that :
+```
+# mkdir -p /chroot_dir/path/to/mysql/sockets/
+# mount -o bind /path/to/mysql/sockets/ /chroot_dir/path/to/mysql
+```
 
 ## PHP mail() function
 
@@ -263,6 +271,10 @@ You have three options here:
   You can then put a single binary inside your jail, 
   and deliver mail via a smarthost,
 * Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).
+
+## PHP iconv
+
+iconv() function need `/usr/lib/x86_64-linux-gnu/gconv` that must be in chroot, and also `/usr/lib/locale`. without that you may have `PHP Notice: iconv(): Wrong charset, conversion from `UTF-8' to `CP1252' is not allowed` in log.
 
 ## Shared libraries
 
@@ -295,3 +307,14 @@ lookup is done. Solution:
 ```
  LoadFile /lib/libgcc_s.so.1
 ```
+
+* Curl need to preload nss library and trusted certificat or may occur `Problem with the SSL CA cert (path? access rights?)` error :
+
+```
+  Load /usr/lib64/libsoftokn3.so
+  Load /usr/lib64/libnsssysinit.so
+  Load /usr/lib64/libnsspem.so
+```
+
+
+

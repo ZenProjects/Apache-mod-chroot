@@ -360,7 +360,7 @@ handy directive for that: [LoadFile](https://httpd.apache.org/docs/2.4/mod/mod_s
 
 ### For exemple:
 
-* DNS lookups - GNU libc tries to load libnss_dns.so.2 when a first DNS
+* DNS lookups - GNU libc tries to load libnss_dns.so.2 and some time libnss_files.so.2 when a first DNS
 lookup is done. Solution:
 
 ```
@@ -381,4 +381,36 @@ lookup is done. Solution:
   LoadFile /usr/lib64/libsoftokn3.so
   LoadFile /usr/lib64/libnsssysinit.so
   LoadFile /usr/lib64/libnsspem.so
+```
+
+## to determine what librarie they need to preload before chroot or to include in the chroot jail
+
+### Use `ldd` to see library linked with an executable:
+```
+# ldd /bin/sh
+        linux-vdso.so.1 =>  (0x00007ffe65357000)
+        libtinfo.so.5 => /lib64/libtinfo.so.5 (0x0000003444e00000)
+        libdl.so.2 => /lib64/libdl.so.2 (0x0000003435200000)
+        libc.so.6 => /lib64/libc.so.6 (0x0000003434e00000)
+        /lib64/ld-linux-x86-64.so.2 (0x0000003434a00000)
+```
+
+### When executing : 
+```
+# strace -e trace=file /bin/sh 2>&1  | egrep "open|stat"
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+open("/lib64/libtinfo.so.5", O_RDONLY)  = 3
+open("/lib64/libdl.so.2", O_RDONLY)     = 3
+open("/lib64/libc.so.6", O_RDONLY)      = 3
+open("/dev/tty", O_RDWR|O_NONBLOCK)     = 3
+open("/usr/lib/locale/locale-archive", O_RDONLY) = 3
+open("/proc/meminfo", O_RDONLY|O_CLOEXEC) = 3
+stat("/mnt/www/etc", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+stat(".", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+open("/usr/lib64/gconv/gconv-modules.cache", O_RDONLY) = 3
+```
+
+### or on already running executable use strace (a running php-fpm pool) :
+```
+#  strace  -p $(ps -ef | grep fpm | grep <fpm pool name> | awk '{a[i++]=$2}END{printf(a[0]);for(n=1;n<i;n++)printf(","a[n])}') 2>&1 | egrep "open|stat"
 ```

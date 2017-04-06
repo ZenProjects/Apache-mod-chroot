@@ -274,9 +274,51 @@ You have three options here:
 
 ## PHP Excec Functions
 
-PHP `exec()`, `shell_exec()`, ou `proc_open()` execution function use `/bin/sh`. You need to include /bin/sh in chroot jail to use that function in PHP.
+PHP `system()`, `exec()`, `shell_exec()`, ou `proc_open()` execution function uses `/bin/sh -c` internally. Beceause of that you need to include `/bin/sh` in chroot jail to use that function in PHP.
 
 Try to use [busybox](https://busybox.net/) or [toybox](http://www.landley.net/toybox/) minimalist and staticly linked shell (no need other think that the executable in chroot jail), or [dash](https://en.wikipedia.org/wiki/Almquist_shell) light posix shell (that need few dependancy).
+
+Instead of placing a static `sh` or copying libs there, [knzl](https://knzl.de/setting-up-a-chroot-for-php/) had hacked up a small wrapper that supports being called with `-c command` to launch sendmail. It doesn’t support escaping of parameters with quotation marks, but that’s not necessary. It’s called `sh.c`:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+ 
+#define MAXARG 64
+ 
+int main( int argc, char* const argv[] ) {
+    char* args[ MAXARG ] = {};
+ 
+    if( argc < 3 || strcmp( argv[1], "-c" ) != 0 ) {
+        fprintf( stderr, "Usage: %s -c <cmd>\n", argv[0] );  
+        return 1;
+    }
+ 
+    {
+        char* token;
+        int i = 0;  
+        char* argStr = strdup( argv[2] );
+        while( ( token = strsep( &argStr, " " ) ) != NULL ) {
+            if( token && strlen( token ) )
+                args[ i++ ] = token;
+            if( i >= MAXARG )
+                return 2;
+        }
+    }  
+ 
+    return execvp( args[0], args );
+}
+```
+
+Compile it by calling
+
+```
+# gcc sh.c -o sh -static
+```
+
+and place it as `bin/sh` in the chroot.
 
 ## PHP iconv
 

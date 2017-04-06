@@ -299,6 +299,7 @@ lookup is done. Solution:
 
 ```
  LoadFile /lib/libnss_dns.so.2
+ LoadFile /lib/libnss_files.so.2
 ```
 
 * Apache 2.0 with mpm_worker on Linux 2.6 - GNU libc tries to load
@@ -311,10 +312,7 @@ lookup is done. Solution:
 * Curl need to preload nss library and trusted certificat or may occur `Problem with the SSL CA cert (path? access rights?)` error :
 
 ```
-  Load /usr/lib64/libsoftokn3.so
-  Load /usr/lib64/libnsssysinit.so
-  Load /usr/lib64/libnsspem.so
+  LoadFile /usr/lib64/libsoftokn3.so
+  LoadFile /usr/lib64/libnsssysinit.so
+  LoadFile /usr/lib64/libnsspem.so
 ```
-
-
-

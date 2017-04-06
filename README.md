@@ -46,13 +46,13 @@ on.
 
 ## Chroot - the mod_chroot way
 
-mod_chroot allows you to run Apache in a chroot jail with no additional
-files. The chroot() system call is performed at the end of startup
-procedure - when all libraries are loaded and log files open. 
+**mod_chroot** allows you to run Apache in a chroot jail with no additional
+files. The **chroot()** system call is performed at the end of startup
+procedure - *when all libraries are loaded and log files open*. 
 
 ## Major change between 0.x and 1.x version:
 
-Starting from version 0.3 mod_chroot supports apache 2.0.
+Starting from version 0.3 **mod_chroot** supports apache 2.0.
 While most problems with Apache 1.3 are solved in 2.0 (no more module
 ordering hassle, no need to apply EAPI patches), architecture changes that
 appeared in 2.0 created one new problem: multi-processing modules (MPMs).
@@ -66,35 +66,36 @@ inside a jail. And MPMs need to create some files during startup (at least
 one, a pidfile) - these have to be placed inside the jail. 
 
 Once chrooted, Apache cannot access anything located above ChrootDir. For
-that reason restarting Apache with 'apachectl reload', 'apachectl
-graceful' or 'kill -HUP apache_pid' will not work as expected. Apache will
+that reason restarting Apache with `apachectl reload`, `apachectl
+graceful` or `kill -HUP apache_pid` will not work as expected. Apache will
 not be able to read its config file, open logs or load modules.
 
-Starting with the 1.0 of mod_chroot all this probleme are fixed. 
+Starting with the 1.0 of **mod_chroot** solve all this probleme. 
 
-- In first problem are resolved by placing the chroot in child_init, after the mpm initialisation,
+- In first problem are resolved by placing the **chroot** in **child_init phase**, after the mpm initialisation,
   in that way they don't need to place pid file, scoreboard, Lock File inside the jail.
 
-- And the seconds probleme are command like "DocumentRoot" and "CoreDumpDirectory" that are tested at start of the server, 
+- And the seconds probleme are command like `DocumentRoot` and `CoreDumpDirectory` that are tested at start of the server, 
   that make oblige to point to real directory outside the chroot and in the chroot... 
-  This proleme is resolved by faking all map to storage transparantly like mod_alias (by setting ChrootFixRoot option).
-  This also fake the CoreDumpDirectory directory.
 
-in that way using mod_chroot is simple like to load the module and set the chroot dir...
+  This proleme is resolved by faking all map to storage transparantly like mod_alias (by setting `ChrootFixRoot` option).
+  This also fake the `CoreDumpDirectory` directory.
+
+in that way using **mod_chroot** is simple like to load the module and set the chroot dir...
 the only constraint are to set document root and coredump directory in the path of the chroot dir...
 
 Ex. this are ok:
 ```
-	ChrootDir /srv/www1
-	DocumentRoot /srv/www1/htdocs
-	CoreDumpDirectory /srv/www1/dump
+ChrootDir         /srv/www1
+DocumentRoot      /srv/www1/htdocs
+CoreDumpDirectory /srv/www1/dump
 ```
 
 Ex. this are not ok:
 ```
-	ChrootDir /srv/www1
-	DocumentRoot /htdocs/www1
-	CoreDumpDirectory /dump/www1
+ChrootDir         /srv/www1
+DocumentRoot      /htdocs
+CoreDumpDirectory /dump
 ```
 
 # Building 
@@ -103,131 +104,131 @@ Ex. this are not ok:
 
 in order to build this module you need:
 
-- apxs (shipped as apxs2 by some distributors) and Apache
+- **apxs** (shipped as apxs2 by some distributors) and Apache
   headers. If you compiled Apache from source you already have these
   headers. If you use Debian, you need to install apache2-prefork-dev or
   apache2-threaded-dev.
-- Make
-- C compiler (ex:gcc).
+- **Make**
+- **C** compiler (ex:gcc).
 
-Warning: starting 1.0 they support only Apache 2.x.
+*Warning: starting 1.0 they support only Apache 2.x.*
 
 ## Building mod_chroot
 
-1 - Go to mod_chroot source directory and type:
+1 - Go to **mod_chroot** source directory and type:
 
 ```	
-        # ./configure --with-apxs=/path/to/apxs
-	# make
-	# make install
+# ./configure --with-apxs=/path/to/apxs
+# make
+# make install
 ```
 
 2 - add in your httpd.conf the loading of the module:
 
 ```
-       <IfModule !mod_chroot.c>
-       LoadModule chroot_module modules/mod_chroot.so
-       </IfModule>
+<IfModule !mod_chroot.c>
+  LoadModule chroot_module modules/mod_chroot.so
+</IfModule>
 ```
 
 ## Configuration 
 
-mod_chroot provides two configuration directive:
+**mod_chroot** provides two configuration directive:
 
 ### ChrootDir: 
 
 It can only be used in main server configuration. You can't put ChrootDir inside
-a <Directory>, <Files>, <Location>, <VirtualHost> sections or .htaccess
+a `<Directory>`, `<Files>`, `<Location>`, `<VirtualHost>` sections or `.htaccess`
 files. 
 
-Define the chroot virtual path base.
+They define the **chroot virtual path base**.
 
-Example: if you store your www files in /var/www and you want to
-make it as "virtual root", set ChrootDir this path. 
+**Example:** *if you store your www files in **/var/www** and you want to
+make it as `virtual root`, set **ChrootDir** this path.* 
       
 #### You can use apache server root relative path.
 
-Example: 
+**Example:** 
 ```
-  ChrootDir chroot
+ChrootDir chroot
 ```
 
 if the server root is /srv/www1 and ChrootDir is set to "chroot" while point to /srv/www1/chroot directory
 
 #### you can use some hints to set the chroot directory to value with apache internal value:
 
-- "DOCUMENT_ROOT" => set the chroot to the globale apache document root value. 
-  (to use this you must set documentroot before ChrootDir cmd).
+- `DOCUMENT_ROOT` => set the **chroot virtual path base** to the globale apache **document root** value. 
+  (to use this you must set **document root** before **ChrootDir** cmd).
 
-- "SERVER_ROOT" => set the chroot to the apache server root.
-  (-d args of httpd, or ServerRoot apache directive)
+- `SERVER_ROOT` => set the **chroot virtual path base** to the apache **server root**.
+  (`-d` args of `httpd`, or `ServerRoot` apache directive)
 
-Example: 
+**Example:** 
 ```
 ChrootDir DOCUMENT_ROOT
 ```
-to set the chroot to the apache document root.
+to set the **chroot** to the apache **document root**.
 
 ### ChrootFixRoot: 
 
 It can only be used in main server configuration. You can't put ChrootDir inside
-a <Directory>, <Files>, <Location>, <VirtualHost> sections or .htaccess
+a `<Directory>`, `<Files>`, `<Location>`, `<VirtualHost>` sections or `.htaccess`
 files. 
 
-The DocumentRoot (global config context) apache commande verify if directory exist 
-before the chroot is activated, in that way you cannot use DocumentRoot (global config context) 
-relative to chroot (/www in place /var/chroot/www if chroot is /var/chroot). 
+The `DocumentRoot` (global config context) apache commande verify if directory exist 
+before the chroot is activated, in that way you cannot use `DocumentRoot` (global config context) 
+relative to **chroot** (`/www` in place `/var/chroot/www` if **chroot** is `/var/chroot`). 
 
-Note: If you not set global config context DocumentRoot apache set it to default value (define at compile time) 
-and check it in the same way.
+**Note:** *if you not set global config context `DocumentRoot` apache set it to default value (define at compile time) 
+and check it in the same way.*
 
-Exemple: If you had DocumentRoot pointing to "/var/chroot/www" and ChootDir pointing to "/var/chroot"
-Apache will be looking for "/var/chroot/www" inside of your chroot (/var/chroot/www/var/chroot/www)
+**Exemple:** If you had `DocumentRoot` pointing to `/var/chroot/www` and `ChootDir` pointing to `/var/chroot`
+Apache will be looking for `/var/chroot/www` inside of your chroot (`/var/chroot/www/var/chroot/www`)
 
-And if you set ChrootFixRoot to "yes" (are off by default), you dont need to take care about that.
+And if you set `ChrootFixRoot` to `yes` (are `off` by default), you dont need to take care about that.
 
-This options fake all apache map to file operation transparantly (like apache mod_alias),
-and fake also the CoreDumpDirectory directory.
+This options fake all apache map to file operation transparantly (like apache **mod_alias**),
+and fake also the `CoreDumpDirectory` directory.
 
-In that way you can use the real (with DocumentRoot/Alias/UserDir...) path in 
+In that way you can use the real (with `DocumentRoot`/`Alias`/`UserDir`...) path in 
 apache configuration file, and this option while translate all real path to relative 
-path to chroot directory (/var/chroot/www is translated to /www if chroot dir is /var/chroot).
+path to chroot directory (`/var/chroot/www` is translated to `/www` if **chroot** dir is `/var/chroot`).
 
 #### Example 1: if you setup your apache like that.
 ```
-	ServerRoot /srv/www1
-	DocumentRoot /srv/www1/chroot/htdocs
-	ChrootFixRoot on
-	# path relative to server root ==> chrootdir is set to /srv/www1/chroot
-	ChrootDir chroot 
+ServerRoot /srv/www1
+DocumentRoot /srv/www1/chroot/htdocs
+ChrootFixRoot on
+# path relative to server root ==> chrootdir is set to /srv/www1/chroot
+ChrootDir chroot 
 ```
 
-all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
-   /htdocs/path/to/mypage because the chroot are /srv/www1/chroot.
+all request to the server like `http://mysserver/path/to/mypage` while be transparantly translated to
+   `/htdocs/path/to/mypage` because the chroot are `/srv/www1/chroot`.
 
 #### Example 2: if you setup your apache like that.
 ```
-	ServerRoot /srv/www1
-	DocumentRoot /srv/www1/htdocs
-	ChrootFixRoot on
-	# using server root to set chrootdir.
-	ChrootDir SERVER_ROOT
+ServerRoot /srv/www1
+DocumentRoot /srv/www1/htdocs
+ChrootFixRoot on
+# using server root to set chrootdir.
+ChrootDir SERVER_ROOT
 ```
 
-all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
-   /htdocs/path/to/mypage because the chroot are /srv/www1.
+all request to the server like `http://mysserver/path/to/mypage` while be transparantly translated to
+   `/htdocs/path/to/mypage` because the chroot are `/srv/www1`.
 
 #### Example 3: if you setup your apache like that.
 ```
-	ServerRoot /srv/www1
-	DocumentRoot /srv/www1/htdocs
-	ChrootFixRoot on
-	# using globale document root to set chrootdir.
-	ChrootDir DOCUMENT_ROOT
+ServerRoot /srv/www1
+DocumentRoot /srv/www1/htdocs
+ChrootFixRoot on
+# using globale document root to set chrootdir.
+ChrootDir DOCUMENT_ROOT
 ```
 
-all request to the server like http://mysserver/path/to/mypage while be transparantly translated to
-   /path/to/mypage because the chroot are /srv/www1/htdocs.
+all request to the server like `http://mysserver/path/to/mypage` while be transparantly translated to
+   `/path/to/mypage` because the chroot are `/srv/www1/htdocs`.
 
 # CAVEATS
 
@@ -245,22 +246,23 @@ Every time you use the **date function** in the chroot jail, you while get an er
 ## DNS lookups
 
 Libresolv uses /etc/resolv.conf to find your DNS server. If this file
-doesn't exist, libresolv uses 127.0.0.1:53 as the DNS server. You can run
-a small caching server listening on 127.0.0.1 (which may be a good idea
+doesn't exist, libresolv uses `127.0.0.1:53` as the DNS server. You can run
+a small caching server listening on `127.0.0.1` (which may be a good idea
 anyway), or use your operating system's firewall to transparently redirect
-queries to 127.0.0.1:53 to your real DNS server. Note that this is only
-necessary if you do DNS lookups - probably this can be avoided?
+queries to `127.0.0.1:53` to your real DNS server. 
 
-you may need to copy /etc/nsswitch.conf and /etc/resolv.conf in chroot jail :
+Note that this is only necessary if you do DNS lookups - *probably this can be avoided?*
+
+You may need to copy `/etc/nsswitch.conf` and `/etc/resolv.conf` in **chroot** jail :
 ```
 # mkdir -p /chroot/etc
 # cp /etc/nsswitch.conf /chroot/etc/nsswitch.conf
 # cp /etc/resolv.conf /chroot/etc/resolv.conf
 ```
 
-Please also read the libraries section below because libc resolver load dymanics library at first resolution.
+Please also read the libraries section below because libc resolver load some additional dymanics library at first DNS resolution.
 
-If you whant to use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail you must map nscd socket in the chroot jail.
+If you whant to use [**nscd**](https://linux.die.net/man/8/nscd) in the **chroot** jail you must map **nscd** socket in the chroot jail.
 
 ```
 # mkdir -p /chroot/var/run
@@ -269,13 +271,11 @@ If you whant to use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail 
 
 ## Databases
 
-If your mySQL/PostgreSQL accepts connections on a Unix socket which is
-outside of your chroot jail, reconfigure it to listen on a loopback
-address (127.0.0.1).
+If your mySQL/PostgreSQL accepts connections on a Unix socket which is outside of your **chroot** jail, reconfigure it to listen on a loopback address (127.0.0.1).
 
-With mysql if you try to connect local db you must use `127.0.0.1` in place of `localhost` in connect string, without that mysql client try to use mysql unix sockets in place of using tcp, without that in the chroot jail you cannot connect to db because the socket are generaly outside of the chroot.
+With mysql if you try to connect local db you must use `127.0.0.1` in place of `localhost` in connect string, without that mysql client try to use mysql unix sockets in place of using tcp, without that in the **chroot** jail you cannot connect to db because the socket are generaly outside of the **chroot**.
 
-You can also map socket in the chroot jail with `mount bind` like that :
+You can also map socket in the **chroot** jail with `mount bind` like that :
 ```
 # mkdir -p /chroot_dir/path/to/mysql/sockets/
 # mount -o bind /path/to/mysql/sockets/ /chroot_dir/path/to/mysql
@@ -284,18 +284,17 @@ You can also map socket in the chroot jail with `mount bind` like that :
 ## PHP mail() function
 
 Under Unix, PHP requires a sendmail binary to send mail. Putting this file
-inside your jail may not be sufficient, you would probably need to move
+inside your **chroot** jail may not be sufficient, you would probably need to move
 your mail queue as well. 
 
-You have three options here:
+To avoid that you have three options here:
 * Don't use mail()! Use a class/function that knows how to send directly
   via SMTP :
   - [Pear's Mail](http://pear.php.net/package/Mail),
   - [Swiftmailer](http://swiftmailer.org/),
-* Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp) or [mini_sendmail](http://acme.com/software/mini_sendmail/). 
-  You can then put a single binary inside your jail, 
-  and deliver mail via a smarthost *(warning see PHP Exec function section beceause php need /bin/sh to execute sendmail clone in the chroot jail)*,
 * Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).
+* Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp) or [mini_sendmail](http://acme.com/software/mini_sendmail/). 
+  You can then put a single binary inside your jail, and deliver mail via a smarthost *(warning see PHP Exec function section beceause php need /bin/sh to execute sendmail clone in the chroot jail)*,
 
 ## PHP **exec** Functions
 
@@ -355,7 +354,7 @@ Shared libraries are libraries which are linked to a program at run-time.
 Nowadays, most programs require some shared libraries to run - libc.so is
 most common. You can see a list of shared libraries a program requires by
 running ldd /path/to/program. Loading of these libraries is done
-automagically by ld.so at startup. mod_chroot doesn't interfere with this
+automagically by ld.so at startup. **mod_chroot** doesn't interfere with this
 mechanism.
 
 A program may also explicitly load a shared library by calling dlopen()

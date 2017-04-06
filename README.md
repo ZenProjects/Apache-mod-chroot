@@ -383,6 +383,14 @@ lookup is done. Solution:
   LoadFile /usr/lib64/libnsspem.so
 ```
 
+and map trusted store in the chroot jail with mount bind :
+```
+# mkdir -p /chroot/etc/pki/tls
+# mount -o bind /etc/pki/tls        /chroot/etc/pki/tls       
+# mkdir -p /chroot/etc/pki/ca-trust
+# mount -o bind /etc/pki/ca-trust/  /chroot/etc/pki/ca-trust
+```
+
 ## to determine what librarie they need to preload before chroot or to include in the chroot jail
 
 ### Use `ldd` to see library linked with an executable:

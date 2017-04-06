@@ -276,7 +276,7 @@ You have three options here:
 
 PHP `system()`, `exec()`, `shell_exec()`, ou `proc_open()` execution function uses `/bin/sh -c` internally. Beceause of that you need to include `/bin/sh` in chroot jail to use that function in PHP.
 
-Try to use [busybox](https://busybox.net/) or [toybox](http://www.landley.net/toybox/) minimalist and staticly linked shell (no need other think that the executable in chroot jail), or [dash](https://en.wikipedia.org/wiki/Almquist_shell) light posix shell (that need few dependancy).
+Try to use [busybox](https://busybox.net/) or [toybox](http://www.landley.net/toybox/) minimalist and staticly linked shell (no need other thing that the executable in chroot jail), or [dash](https://en.wikipedia.org/wiki/Almquist_shell) light posix shell (that need few dependancy in the chroot jail).
 
 Instead of placing a static `sh` or copying libs there, [knzl](https://knzl.de/setting-up-a-chroot-for-php/) had hacked up a small wrapper that supports being called with `-c command` to launch sendmail. It doesn’t support escaping of parameters with quotation marks, but that’s not necessary. It’s called `sh.c`:
 

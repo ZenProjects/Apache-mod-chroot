@@ -272,7 +272,7 @@ You have three options here:
   and deliver mail via a smarthost *(warning see PHP Exec function section beceause php need /bin/sh to execute sendmail clone in the chroot jail)*,
 * Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).
 
-## PHP Excec Functions
+## PHP **exec** Functions
 
 PHP `system()`, `exec()`, `shell_exec()`, ou `proc_open()` execution function uses `/bin/sh -c` internally. Beceause of that you need to include `/bin/sh` in chroot jail to use that function in PHP.
 

@@ -244,16 +244,23 @@ Every time you use the **date function** in the chroot jail, you while get an er
 
 ## DNS lookups
 
-libresolv uses /etc/resolv.conf to find your DNS server. If this file
+Libresolv uses /etc/resolv.conf to find your DNS server. If this file
 doesn't exist, libresolv uses 127.0.0.1:53 as the DNS server. You can run
 a small caching server listening on 127.0.0.1 (which may be a good idea
 anyway), or use your operating system's firewall to transparently redirect
 queries to 127.0.0.1:53 to your real DNS server. Note that this is only
 necessary if you do DNS lookups - probably this can be avoided?
 
-Please also read the libraries section below beceause libc resolver load dymanics library at first resolution.
+you may need to copy /etc/nsswitch.conf and /etc/resolv.conf in chroot jail :
+```
+# mkdir -p /chroot/etc
+# cp /etc/nsswitch.conf /chroot/etc/nsswitch.conf
+# cp /etc/resolv.conf /chroot/etc/resolv.conf
+```
 
-To use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail you must map nscd socket in the chroot jail.
+Please also read the libraries section below because libc resolver load dymanics library at first resolution.
+
+If you whant to use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail you must map nscd socket in the chroot jail.
 
 ```
 # mkdir -p /chroot/var/run

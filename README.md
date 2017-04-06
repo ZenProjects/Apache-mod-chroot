@@ -391,7 +391,7 @@ and map trusted store in the chroot jail with mount bind :
 # mount -o bind /etc/pki/ca-trust/  /chroot/etc/pki/ca-trust
 ```
 
-## to determine what librarie they need to preload before chroot or to include in the chroot jail
+## To determine what librarie they need to preload before chroot or to include in the chroot jail
 
 ### Use `ldd` to see library linked with an executable:
 ```
@@ -418,7 +418,7 @@ stat(".", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
 open("/usr/lib64/gconv/gconv-modules.cache", O_RDONLY) = 3
 ```
 
-### or on already running executable use strace (a running php-fpm pool) :
+### Or on already running executable use `strace -p <pid>[,<pid>,...]` (a running process pool) :
 ```
-#  strace  -p $(ps -ef | grep fpm | grep <fpm pool name> | awk '{a[i++]=$2}END{printf(a[0]);for(n=1;n<i;n++)printf(","a[n])}') 2>&1 | egrep "open|stat"
+#  strace  -p $(ps -ef | grep <process pool name> | awk '{a[i++]=$2}END{printf(a[0]);for(n=1;n<i;n++)printf(","a[n])}') 2>&1 | egrep "open|stat"
 ```

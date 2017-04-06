@@ -256,6 +256,7 @@ Please also read the libraries section below beceause libc resolver load dymanic
 To use [nscd](https://linux.die.net/man/8/nscd) in the chroot jail you must map nscd socket in the chroot jail.
 
 ```
+# mkdir -p /chroot/var/run
 # mount -o bind /var/run/nscd /chroot/var/run/nscd
 ```
 

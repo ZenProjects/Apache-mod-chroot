@@ -231,6 +231,17 @@ all request to the server like http://mysserver/path/to/mypage while be transpar
 
 # CAVEATS
 
+## Date Timezone database
+
+Every time you use the date function, you while get an error saying the timezone db is corrupt. Is why you need localtime and zoneinfo file in the chroot jail.
+
+```
+# mkdir -p /chroot/etc
+# cp /etc/localtime /chroot/etc/localtime
+# mkdir -p /chroot/usr/share
+# cp /usr/share/zoneinfo /chroot/usr/share/zoneinfo
+```
+
 ## DNS lookups
 
 libresolv uses /etc/resolv.conf to find your DNS server. If this file

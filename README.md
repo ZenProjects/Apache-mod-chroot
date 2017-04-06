@@ -259,7 +259,7 @@ You have three options here:
   via SMTP :
   - [Pear's Mail](http://pear.php.net/package/Mail),
   - [Swiftmailer](http://swiftmailer.org/),
-* Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp). 
+* Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp) or [mini_sendmail](http://acme.com/software/mini_sendmail/). 
   You can then put a single binary inside your jail, 
   and deliver mail via a smarthost,
 * Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).

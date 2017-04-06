@@ -269,8 +269,14 @@ You have three options here:
   - [Swiftmailer](http://swiftmailer.org/),
 * Install a SMTP-only sendmail clone like [sSMTP](https://tracker.debian.org/pkg/ssmtp) or [mini_sendmail](http://acme.com/software/mini_sendmail/). 
   You can then put a single binary inside your jail, 
-  and deliver mail via a smarthost,
+  and deliver mail via a smarthost *(warning see PHP Exec function section beceause php need /bin/sh to execute sendmail clone in the chroot jail)*,
 * Use [esmtp](https://pecl.php.net/package/esmtp) pecl module based on [libesmtp](https://launchpad.net/ubuntu/+source/libesmtp).
+
+## PHP Excec Functions
+
+PHP `exec()`, `shell_exec()`, ou `proc_open()` execution function use `/bin/sh`. You need to include /bin/sh in chroot jail to use that function in PHP.
+
+Try to use [busybox](https://busybox.net/) or [toybox](http://www.landley.net/toybox/) minimalist and staticly linked shell (no need other think that the executable in chroot jail), or [dash](https://en.wikipedia.org/wiki/Almquist_shell) light posix shell (that need few dependancy).
 
 ## PHP iconv
 

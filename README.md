@@ -11,6 +11,8 @@ don't need to create a special directory hierarchy containing /dev, /lib,
 
 This project are major rewrite of mod_chroot by hobbit at http://core.segfault.pl/~hobbit/mod_chroot/ focused on apache 2 only (removed Apache 1 support).
 
+*Note: From 2.2.10 of apache they include [ChrootDir](https://httpd.apache.org/docs/2.2/mod/mpm_common.html#chrootdir) that are similar but not so simple to use as this version of mod_chroot.*
+
 ## Why chroot?
 
 For security.

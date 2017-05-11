@@ -1,0 +1,15 @@
+machine:
+  timezone:
+    Europe/Paris
+
+dependencies:
+  pre:
+    - sudo apt-get -qq update
+    - sudo apt-get install gcc
+    - sudo apt-get install apache2-dev
+
+compile:
+  pre:
+    - ./configure --with-apxs=/usr/bin/apxs 
+  override:
+    - make
